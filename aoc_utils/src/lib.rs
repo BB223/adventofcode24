@@ -1,15 +1,17 @@
 use std::{env, fs, path::Path};
 
+use dotenvy::dotenv;
 use reqwest::Result;
 
 async fn get_input_web(day: u32) -> Result<String> {
+    dotenv().expect(".env not found");
     let client = reqwest::Client::new();
     let url = format!("https://adventofcode.com/2024/day/{}/input", day);
     println!("Requesting... {}", url);
 
     client
         .get(url)
-        .header("cookie", env::var("SESSION_COOKIE").unwrap())
+        .header("cookie", format!("session={}" ,env::var("SESSION_COOKIE").unwrap()))
         .send()
         .await?
         .text()
