@@ -15,12 +15,18 @@ async fn main() {
         rlist.push(right.parse::<u32>().unwrap());
     }
 
-
-    let sum = llist.iter().map(|num| num * count_nums(&rlist, *num)).sum::<u32>();
+    let sum = llist
+        .iter()
+        .map(|num| num * count_nums(&rlist, *num))
+        .sum::<u32>();
 
     println!("{sum}")
 }
 
 fn count_nums(list: &Vec<u32>, num: u32) -> u32 {
-    list.iter().filter(|n| **n == num).count().try_into().unwrap()
+    list.iter()
+        .filter(|n| **n == num)
+        .count()
+        .try_into()
+        .unwrap()
 }
