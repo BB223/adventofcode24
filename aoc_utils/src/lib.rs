@@ -11,7 +11,10 @@ async fn get_input_web(day: u32) -> Result<String> {
 
     client
         .get(url)
-        .header("cookie", format!("session={}" ,env::var("SESSION_COOKIE").unwrap()))
+        .header(
+            "cookie",
+            format!("session={}", env::var("SESSION_COOKIE").unwrap()),
+        )
         .send()
         .await?
         .text()
