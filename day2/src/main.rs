@@ -21,10 +21,21 @@ async fn main() {
 }
 
 fn is_safe(report: Vec<u32>) -> bool {
-    report
-        .windows(3)
-        .map(is_safe_win)
-        .all(|x| x)
+    let all = report.windows(3).map(is_safe_win).all(|x| x);
+
+    if all {
+        return true;
+    }
+
+    for i in 0..report.len() {
+        let mut check = report.clone();
+        check.remove(i);
+        if check.windows(3).map(is_safe_win).all(|x| x) {
+            return true;
+        }
+    }
+
+    false
 }
 
 fn is_safe_win(win: &[u32]) -> bool {
