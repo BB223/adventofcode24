@@ -23,7 +23,7 @@ async fn main() {
     println!("{sum}")
 }
 
-fn count_nums(list: &Vec<u32>, num: u32) -> u32 {
+fn count_nums(list: &[u32], num: u32) -> u32 {
     list.iter()
         .filter(|n| **n == num)
         .count()
