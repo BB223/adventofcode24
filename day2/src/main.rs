@@ -23,8 +23,8 @@ async fn main() {
 fn is_safe(report: Vec<u32>) -> bool {
     report
         .windows(3)
-        .map(|win| is_safe_win(win))
-        .fold(true, |acc, x| acc && x)
+        .map(is_safe_win)
+        .all(|x| x)
 }
 
 fn is_safe_win(win: &[u32]) -> bool {
