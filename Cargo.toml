@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-    "aoc_utils", "day1", "day2",
+    "aoc_utils", "day1", "day2", "day3",
 ]
 resolver = "2"
