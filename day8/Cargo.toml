@@ -1,0 +1,8 @@
+[package]
+name = "day8"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aoc_utils = { version = "0.1.0", path = "../aoc_utils" }
+tokio = { version = "1.42.0", features = ["full"] }
