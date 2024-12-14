@@ -28,6 +28,11 @@ fn is_true(mut nums: VecDeque<u64>, current: u64, target: u64) -> bool {
         Some(apply) => {
             is_true(nums.clone(), current + apply, target)
                 || is_true(nums.clone(), current * apply, target)
+                || is_true(
+                    nums.clone(),
+                    current * 10u64.pow(apply.ilog10() + 1) + apply,
+                    target,
+                )
         }
         None => current == target,
     }
