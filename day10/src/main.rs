@@ -1,8 +1,4 @@
-use std::{
-    collections::HashSet,
-    sync::{Arc, Mutex},
-    thread,
-};
+use std::{sync::Arc, thread};
 
 use aoc_utils::get_input;
 
@@ -14,6 +10,7 @@ async fn main() {
         .map(|line| line.chars().map(|c| c.to_digit(10).unwrap()).collect())
         .collect();
     let shared_map = Arc::new(map);
+
     let mut handles = Vec::new();
 
     for (i, line) in shared_map.iter().enumerate() {
@@ -23,15 +20,13 @@ async fn main() {
             }
 
             let child_map = Arc::clone(&shared_map);
-            let shared_nines = Arc::new(Mutex::new(HashSet::new()));
-            let child_nines = Arc::clone(&shared_nines);
 
             let thread = thread::Builder::new().name(format!("{},{}", i, j));
             let handle = thread
                 .spawn(move || {
-                    finder(child_map, (i, j), Arc::clone(&child_nines));
+                    let count = finder(child_map, (i, j));
 
-                    ((i, j), child_nines.lock().unwrap().len())
+                    ((i, j), count)
                 })
                 .expect("I don't know");
 
@@ -43,58 +38,52 @@ async fn main() {
         results.push(handle.join().unwrap());
     }
 
-    let res: usize = results.iter().map(|r| r.1).sum();
+    let res: u32 = results.iter().map(|r| r.1).sum();
 
     println!("{res}");
 }
 
-fn finder(
-    map: Arc<Vec<Vec<u32>>>,
-    position: (usize, usize),
-    nines: Arc<Mutex<HashSet<(usize, usize)>>>,
-) {
+fn finder(map: Arc<Vec<Vec<u32>>>, position: (usize, usize)) -> u32 {
     let (x, y) = position;
     let curr = map[x][y];
     if curr == 9 {
-        let mut set = nines.lock().unwrap();
-        set.insert(position);
+        return 1;
     }
     let mut handles = Vec::new();
 
     if map[x].get(y - 1).is_some_and(|&d| d == curr + 1) {
         let child_map = Arc::clone(&map);
-        let child_nines = Arc::clone(&nines);
 
-        let handle = thread::spawn(move || finder(child_map, (x, y - 1), child_nines));
+        let handle = thread::spawn(move || finder(child_map, (x, y - 1)));
 
         handles.push(handle);
     }
     if map[x].get(y + 1).is_some_and(|&d| d == curr + 1) {
         let child_map = Arc::clone(&map);
-        let child_nines = Arc::clone(&nines);
 
-        let handle = thread::spawn(move || finder(child_map, (x, y + 1), child_nines));
+        let handle = thread::spawn(move || finder(child_map, (x, y + 1)));
 
         handles.push(handle);
     }
     if map.get(x + 1).is_some_and(|d| d[y] == curr + 1) {
         let child_map = Arc::clone(&map);
-        let child_nines = Arc::clone(&nines);
 
-        let handle = thread::spawn(move || finder(child_map, (x + 1, y), child_nines));
+        let handle = thread::spawn(move || finder(child_map, (x + 1, y)));
 
         handles.push(handle);
     }
     if map.get(x - 1).is_some_and(|d| d[y] == curr + 1) {
         let child_map = Arc::clone(&map);
-        let child_nines = Arc::clone(&nines);
 
-        let handle = thread::spawn(move || finder(child_map, (x - 1, y), child_nines));
+        let handle = thread::spawn(move || finder(child_map, (x - 1, y)));
 
         handles.push(handle);
     }
 
+    let mut results = Vec::new();
     for handle in handles {
-        handle.join().unwrap();
+        results.push(handle.join().unwrap());
     }
+
+    results.iter().sum()
 }
