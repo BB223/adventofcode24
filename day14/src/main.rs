@@ -4,11 +4,11 @@ use regex::Regex;
 #[tokio::main]
 async fn main() {
     let input = get_input(14).await;
-    let time = 100;
-    let width = 101;
-    let height = 103;
+    let time = 8149;
+    const WIDTH: i32 = 101;
+    const HEIGHT: i32 = 103;
     let regex = Regex::new(r"-?\d+").unwrap();
-    let mut results = [0; 4];
+    let mut grid = [[0; WIDTH as usize]; HEIGHT as usize];
     input
         .lines()
         .map(|line| {
@@ -21,24 +21,23 @@ async fn main() {
         })
         .map(|(position, velocity)| {
             (
-                ((position.0 + velocity.0 * time) % width + width) % width,
-                ((position.1 + velocity.1 * time) % height + height) % height,
+                ((position.0 + velocity.0 * time) % WIDTH + WIDTH) % WIDTH,
+                ((position.1 + velocity.1 * time) % HEIGHT + HEIGHT) % HEIGHT,
             )
         })
-        .filter(|&(x, y)| x != width / 2 && y != height / 2)
+        .filter(|&(x, y)| x != WIDTH / 2 && y != HEIGHT / 2)
         .for_each(|(x, y)| {
-            if x < width / 2 {
-                if y < height / 2 {
-                    results[0] += 1;
-                } else {
-                    results[1] += 1;
-                }
-            } else if y < height / 2 {
-                results[2] += 1;
-            } else {
-                results[3] += 1;
-            }
+            grid[y as usize][x as usize] += 1;
         });
-    let res: u32 = results.iter().product();
-    println!("{res}");
+
+    for inner in grid {
+        for num in inner {
+            if num == 0 {
+                print!(" ");
+            } else {
+                print!("#");
+            }
+        }
+        println!();
+    }
 }
